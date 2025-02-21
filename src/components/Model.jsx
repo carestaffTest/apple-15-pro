@@ -21,7 +21,7 @@ const Model = () => {
   });
   const [power, setPower] = useState(false);
   const [cameraSwitch, setCameraSwitch] = useState(false);
-  const backCam = CheckBackCam();
+  // const backCam = CheckBackCam();
 
   const cameraControlSmall = useRef();
   const cameraControlLarge = useRef();
@@ -31,6 +31,7 @@ const Model = () => {
 
   const [smallRotation, setSmallRotation] = useState(0);
   const [largeRotation, setLargeRotation] = useState(0);
+  const [hasBackCamera, setHasBackCamera] = useState(false);
 
   const tl = gsap.timeline();
 
@@ -54,12 +55,27 @@ const Model = () => {
     setPower(!power);
     setCameraSwitch(!cameraSwitch);
   };
-  const handleCameraSwitch = () => {
-    if (backCam) {
-      setCameraSwitch(!cameraSwitch);
+
+  const handleCameraSwitch = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const backCameraExists = devices.some(
+        (device) =>
+          device.kind === "videoinput" &&
+          device.label.toLowerCase().includes("back")
+      );
+      setHasBackCamera(backCameraExists);
+    } catch (error) {
+      setHasBackCamera(false);
     }
-    if (!backCam) {
-      alert("Your device does not support back camera");
+
+    const backCamAccess = await hasBackCamera;
+    if (backCamAccess) {
+      setCameraSwitch(!cameraSwitch);
+    } else {
+      alert(
+        "Try again! But if your device doesn't have a back camera, don't bother trying again!"
+      );
     }
   };
 
@@ -114,13 +130,11 @@ const Model = () => {
                   />
                 ) : (
                   <>
-                    {backCam ? (
+                    {hasBackCamera && (
                       <WebcamNavigation
                         className=" rounded-md w-full h-full object-cover"
                         videoConstraints={"Back"}
                       />
-                    ) : (
-                      alert("Your device does not support back camera")
                     )}
                   </>
                 )}

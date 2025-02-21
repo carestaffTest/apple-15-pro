@@ -10,6 +10,6 @@ export default defineConfig({
   server: {
     host: "0.0.0.0", // Allows access from any network device
     port: 5173, // Change the port if needed
-    allowedHosts: ["cae8-210-156-40-78.ngrok-free.app"], // for testing on ngrok
+    allowedHosts: ["ef34-210-156-40-78.ngrok-free.app"], // for testing on ngrok
   },
 });
